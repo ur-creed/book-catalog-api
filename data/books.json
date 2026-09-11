@@ -1,0 +1,73 @@
+[
+  {
+    "title": "Neuromancer",
+    "author": "William Gibson",
+    "release_year": 1984,
+    "tags": ["cyberpunk", "science fiction"]
+  },
+  {
+    "title": "Kindred",
+    "author": "Octavia E. Butler",
+    "release_year": 1979
+  },
+  {
+    "title": "Snow Crash",
+    "author": "Neal Stephenson",
+    "release_year": 1992,
+    "tags": ["cyberpunk"]
+  },
+  {
+    "title": "The Calculating Stars",
+    "author": "Mary Robinette Kowal",
+    "release_year": 2018,
+    "tags": ["alternate history"]
+  },
+  {
+    "title": "Ancillary Justice",
+    "author": "Ann Leckie",
+    "release_year": 2013,
+    "tags": ["science fiction"]
+  },
+  {
+    "title": "The Fifth Season",
+    "author": "N.K. Jemisin",
+    "release_year": 2015,
+    "tags": ["fantasy"]
+  },
+  {
+    "title": "Hyperion",
+    "author": "Dan Simmons",
+    "release_year": 1989,
+    "tags": ["science fiction"]
+  },
+  {
+    "title": "The Three-Body Problem",
+    "author": "Cixin Liu",
+    "release_year": 2008,
+    "tags": ["science fiction"]
+  },
+  {
+    "title": "Project Hail Mary",
+    "author": "Andy Weir",
+    "release_year": 2021,
+    "tags": ["science fiction"]
+  },
+  {
+    "title": "A Memory Called Empire",
+    "author": "Arkady Martine",
+    "release_year": 2019,
+    "tags": ["science fiction"]
+  },
+  {
+    "title": "Parable of the Sower",
+    "author": "Octavia E. Butler",
+    "release_year": 1993,
+    "tags": ["dystopian"]
+  },
+  {
+    "title": "Circe",
+    "author": "Madeline Miller",
+    "release_year": 2018,
+    "tags": ["mythology"]
+  }
+]
