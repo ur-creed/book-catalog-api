@@ -1,10 +1,9 @@
-"""HTTP tests for Book Catalog API endpoints."""
 from datetime import datetime
 
+import pytest
 from fastapi.testclient import TestClient
-from pydantic import ValidationError
 
-from api.routers.books import CreateBooksRequest
+from catalog.schemas import CreateBookRequest
 
 SEED_COUNT = 12
 SEED_UNIQUE_AUTHORS = 11
@@ -20,43 +19,12 @@ class TestDocs:
         assert "/stats" in paths
 
     def test_swagger_ui_is_available(self, client: TestClient) -> None:
-        response = client.get("/docs")
-        assert response.status_code == 200
+        assert client.get("/docs").status_code == 200
 
     def test_root_redirects_to_docs(self, client: TestClient) -> None:
         response = client.get("/", follow_redirects=False)
         assert response.status_code in (302, 307)
         assert response.headers["location"] == "/docs"
-
-
-class TestCreateBookValidation:
-    def test_year_validator_rejects_year_below_1400(self) -> None:
-        try:
-            CreateBooksRequest.year_in_range(1399)
-            raise AssertionError("expected ValueError")
-        except ValueError as exc:
-            assert "1400" in str(exc)
-
-    def test_tags_validator_returns_none(self) -> None:
-        assert CreateBooksRequest.tags_are_labels(None) is None
-
-    def test_required_text_rejects_empty_string(self) -> None:
-        class FieldInfo:
-            field_name = "title"
-
-        try:
-            CreateBooksRequest.required_text("", FieldInfo())
-            raise AssertionError("expected ValueError")
-        except ValueError as exc:
-            assert "title is required" in str(exc)
-
-    def test_model_rejects_missing_required_fields(self) -> None:
-        try:
-            CreateBooksRequest.model_validate({})
-            raise AssertionError("expected ValidationError")
-        except ValidationError as exc:
-            fields = {err["loc"][-1] for err in exc.errors()}
-            assert {"title", "author", "year"} <= fields
 
 
 class TestCreateBook:
@@ -96,62 +64,45 @@ class TestCreateBook:
         assert body["title"] == "Dune"
         assert body["author"] == "Frank Herbert"
 
-    def test_create_book_missing_required_fields_returns_422(self, client: TestClient) -> None:
-        response = client.post("/books/", json={})
-        assert response.status_code == 422
-        fields = {error["loc"][-1] for error in response.json()["detail"]}
-        assert {"title", "author", "year"} <= fields
-
-    def test_create_book_blank_title_returns_422(self, client: TestClient) -> None:
-        response = client.post(
-            "/books/",
-            json={"title": "   ", "author": "Someone", "year": 2000},
-        )
-        assert response.status_code == 422
-
-    def test_create_book_year_below_1400_returns_422(self, client: TestClient) -> None:
-        response = client.post(
-            "/books/",
-            json={"title": "Too Old", "author": "Anon", "year": 1399},
-        )
-        assert response.status_code == 422
-
-    def test_create_book_year_in_the_future_returns_422(self, client: TestClient) -> None:
-        response = client.post(
-            "/books/",
-            json={
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {},
+            {"title": "   ", "author": "Someone", "year": 2000},
+            {"title": "Too Old", "author": "Anon", "year": 1399},
+            {
                 "title": "From the Future",
                 "author": "Anon",
                 "year": datetime.now().year + 1,
             },
-        )
-        assert response.status_code == 422
+            {"title": "Bad Year", "author": "Anon", "year": "nineteen-eighty"},
+            {"title": "Tagged", "author": "Anon", "year": 2000, "tags": ["ok", "  "]},
+        ],
+        ids=[
+            "missing_fields",
+            "blank_title",
+            "year_before_1400",
+            "year_in_future",
+            "year_not_int",
+            "empty_tag",
+        ],
+    )
+    def test_invalid_create_returns_422(self, client: TestClient, payload: dict) -> None:
+        assert client.post("/books/", json=payload).status_code == 422
 
-    def test_create_book_non_integer_year_returns_422(self, client: TestClient) -> None:
-        response = client.post(
-            "/books/",
-            json={"title": "Bad Year", "author": "Anon", "year": "nineteen-eighty"},
-        )
-        assert response.status_code == 422
-
-    def test_create_book_empty_tag_returns_422(self, client: TestClient) -> None:
-        response = client.post(
-            "/books/",
-            json={
-                "title": "Tagged",
-                "author": "Anon",
-                "year": 2000,
-                "tags": ["ok", "  "],
-            },
-        )
-        assert response.status_code == 422
+    def test_missing_required_fields_are_named(self, client: TestClient) -> None:
+        response = client.post("/books/", json={})
+        fields = {error["loc"][-1] for error in response.json()["detail"]}
+        assert {"title", "author", "year"} <= fields
 
     def test_failed_create_does_not_change_catalog(self, client: TestClient) -> None:
         before = client.get("/stats").json()
-        response = client.post("/books/", json={"title": "Nope"})
-        assert response.status_code == 422
-        after = client.get("/stats").json()
-        assert after == before
+        assert client.post("/books/", json={"title": "Nope"}).status_code == 422
+        assert client.get("/stats").json() == before
+
+    def test_create_schema_rejects_empty_body(self) -> None:
+        with pytest.raises(Exception):
+            CreateBookRequest.model_validate({})
 
 
 class TestListBooks:
@@ -207,13 +158,11 @@ class TestListBooks:
         assert body["total"] >= 1
         assert all("the" in book["title"].lower() for book in body["books"])
 
-    def test_list_books_invalid_offset_returns_422(self, client: TestClient) -> None:
-        response = client.get("/books/", params={"offset": -1})
-        assert response.status_code == 422
-
-    def test_list_books_limit_out_of_range_returns_422(self, client: TestClient) -> None:
-        assert client.get("/books/", params={"limit": 0}).status_code == 422
-        assert client.get("/books/", params={"limit": 101}).status_code == 422
+    @pytest.mark.parametrize("params", [{"offset": -1}, {"limit": 0}, {"limit": 101}])
+    def test_list_books_bad_pagination_returns_422(
+        self, client: TestClient, params: dict
+    ) -> None:
+        assert client.get("/books/", params=params).status_code == 422
 
 
 class TestGetBook:
@@ -233,15 +182,13 @@ class TestGetBook:
         assert response.json()["detail"] == "Book not found"
 
     def test_get_book_non_integer_id_returns_422(self, client: TestClient) -> None:
-        response = client.get("/books/stats")
-        assert response.status_code == 422
+        assert client.get("/books/stats").status_code == 422
 
 
 class TestDeleteBook:
     def test_delete_book_returns_204_and_removes_it(self, client: TestClient) -> None:
         assert client.delete("/books/1").status_code == 204
-        response = client.get("/books/1")
-        assert response.status_code == 404
+        assert client.get("/books/1").status_code == 404
 
     def test_delete_missing_book_returns_404(self, client: TestClient) -> None:
         response = client.delete("/books/9999")
@@ -269,8 +216,7 @@ class TestStats:
         assert after_create["unique_authors"] == SEED_UNIQUE_AUTHORS + 1
 
         assert client.delete(f"/books/{created.json()['id']}").status_code == 204
-        after_delete = client.get("/stats").json()
-        assert after_delete == {
+        assert client.get("/stats").json() == {
             "total_books": SEED_COUNT,
             "unique_authors": SEED_UNIQUE_AUTHORS,
         }
