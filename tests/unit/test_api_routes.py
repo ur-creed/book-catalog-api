@@ -114,7 +114,7 @@ class TestListBooks:
         assert body["offset"] == 0
         assert body["limit"] == 10
         assert len(body["books"]) == 10
-        assert body["books"][0]["title"] == "Neuromancer"
+        assert body["books"][0]["title"] == "Meditations"
 
     def test_list_books_second_page(self, client: TestClient) -> None:
         response = client.get("/books/", params={"offset": 10, "limit": 10})
@@ -132,24 +132,24 @@ class TestListBooks:
         assert body["books"] == []
 
     def test_list_books_filters_by_author_case_insensitive(self, client: TestClient) -> None:
-        response = client.get("/books/", params={"author": "william gibson"})
+        response = client.get("/books/", params={"author": "marcus aurelius"})
         assert response.status_code == 200
         body = response.json()
         assert body["total"] == 1
-        assert body["books"][0]["title"] == "Neuromancer"
+        assert body["books"][0]["title"] == "Meditations"
 
     def test_list_books_author_filter_is_exact_not_substring(self, client: TestClient) -> None:
-        response = client.get("/books/", params={"author": "William"})
+        response = client.get("/books/", params={"author": "Marcus"})
         assert response.status_code == 200
         assert response.json()["total"] == 0
 
     def test_list_books_filters_by_year(self, client: TestClient) -> None:
-        response = client.get("/books/", params={"year": 2018})
+        response = client.get("/books/", params={"year": 1969})
         assert response.status_code == 200
         body = response.json()
         titles = {book["title"] for book in body["books"]}
         assert body["total"] == 2
-        assert titles == {"The Calculating Stars", "Circe"}
+        assert titles == {"The Left Hand of Darkness", "Ubik"}
 
     def test_list_books_searches_title_substring(self, client: TestClient) -> None:
         response = client.get("/books/", params={"title": "the", "limit": 100})
@@ -171,10 +171,10 @@ class TestGetBook:
         assert response.status_code == 200
         body = response.json()
         assert body["id"] == 1
-        assert body["title"] == "Neuromancer"
-        assert body["author"] == "William Gibson"
-        assert body["year"] == 1984
-        assert body["tags"] == ["cyberpunk", "science fiction"]
+        assert body["title"] == "Meditations"
+        assert body["author"] == "Marcus Aurelius"
+        assert body["year"] == 180
+        assert body["tags"] == ["stoicism", "philosophy"]
 
     def test_get_book_missing_id_returns_404(self, client: TestClient) -> None:
         response = client.get("/books/9999")

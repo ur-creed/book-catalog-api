@@ -26,7 +26,7 @@ catalog/
   store.py          # protocol + InMemoryCatalog
   schemas.py        # request/response
   routers/books.py
-data/books.json     # seed snapshot
+data/books.json     # seed: stoic, myth, science fiction
 tests/
 web_server.py       # python web_server.py
 ```

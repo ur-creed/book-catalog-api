@@ -28,18 +28,18 @@ class TestLoadSeed:
         assert catalog.get_stats()["total_books"] == SEED_COUNT
         first = catalog.get_book_by_id(1)
         assert first is not None
-        assert first.title == "Neuromancer"
-        assert first.year == 1984
+        assert first.title == "Meditations"
+        assert first.year == 180
         assert catalog._next_id == SEED_COUNT + 1
 
     def test_load_seed_maps_release_year_and_optional_tags(
         self, catalog: InMemoryCatalog
     ) -> None:
-        kindred = catalog.get_book_by_id(2)
-        assert kindred is not None
-        assert kindred.title == "Kindred"
-        assert kindred.year == 1979
-        assert kindred.tags is None
+        handbook = catalog.get_book_by_id(2)
+        assert handbook is not None
+        assert handbook.title == "Enchiridion"
+        assert handbook.year == 125
+        assert handbook.tags is None
 
     def test_load_seed_returns_false_when_file_missing(
         self, empty_catalog: InMemoryCatalog
@@ -107,26 +107,26 @@ class TestListBooks:
     def test_list_books_filters_author_case_insensitively(
         self, catalog: InMemoryCatalog
     ) -> None:
-        result = catalog.list_books(author="OCTAVIA E. BUTLER", limit=100)
+        result = catalog.list_books(author="MADELINE MILLER", limit=100)
         titles = [book.title for book in result["books"]]
         assert result["total"] == 2
-        assert "Kindred" in titles
-        assert "Parable of the Sower" in titles
+        assert "Circe" in titles
+        assert "The Song of Achilles" in titles
 
     def test_list_books_filters_by_year(self, catalog: InMemoryCatalog) -> None:
-        result = catalog.list_books(year=2018)
+        result = catalog.list_books(year=1969)
         assert result["total"] == 2
-        assert {book.year for book in result["books"]} == {2018}
+        assert {book.year for book in result["books"]} == {1969}
 
     def test_list_books_title_search_is_substring(self, catalog: InMemoryCatalog) -> None:
-        result = catalog.list_books(title="HAIL")
+        result = catalog.list_books(title="ENCHIRIDION")
         assert result["total"] == 1
-        assert result["books"][0].title == "Project Hail Mary"
+        assert result["books"][0].title == "Enchiridion"
 
     def test_list_books_combines_filters(self, catalog: InMemoryCatalog) -> None:
-        result = catalog.list_books(author="Octavia E. Butler", year=1979)
+        result = catalog.list_books(author="Madeline Miller", year=2018)
         assert result["total"] == 1
-        assert result["books"][0].title == "Kindred"
+        assert result["books"][0].title == "Circe"
 
     def test_list_books_empty_catalog(self, empty_catalog: InMemoryCatalog) -> None:
         result = empty_catalog.list_books()

@@ -1,38 +1,56 @@
 [
   {
-    "title": "Neuromancer",
-    "author": "William Gibson",
-    "release_year": 1984,
-    "tags": ["cyberpunk", "science fiction"]
+    "title": "Meditations",
+    "author": "Marcus Aurelius",
+    "release_year": 180,
+    "tags": ["stoicism", "philosophy"]
   },
   {
-    "title": "Kindred",
-    "author": "Octavia E. Butler",
-    "release_year": 1979
+    "title": "Enchiridion",
+    "author": "Epictetus",
+    "release_year": 125
   },
   {
-    "title": "Snow Crash",
-    "author": "Neal Stephenson",
-    "release_year": 1992,
-    "tags": ["cyberpunk"]
+    "title": "Letters from a Stoic",
+    "author": "Seneca",
+    "release_year": 65,
+    "tags": ["stoicism"]
   },
   {
-    "title": "The Calculating Stars",
-    "author": "Mary Robinette Kowal",
+    "title": "Till We Have Faces",
+    "author": "C.S. Lewis",
+    "release_year": 1956,
+    "tags": ["mythology"]
+  },
+  {
+    "title": "Circe",
+    "author": "Madeline Miller",
     "release_year": 2018,
-    "tags": ["alternate history"]
+    "tags": ["mythology"]
   },
   {
-    "title": "Ancillary Justice",
-    "author": "Ann Leckie",
-    "release_year": 2013,
+    "title": "The Song of Achilles",
+    "author": "Madeline Miller",
+    "release_year": 2011,
+    "tags": ["mythology"]
+  },
+  {
+    "title": "The Left Hand of Darkness",
+    "author": "Ursula K. Le Guin",
+    "release_year": 1969,
     "tags": ["science fiction"]
   },
   {
-    "title": "The Fifth Season",
-    "author": "N.K. Jemisin",
-    "release_year": 2015,
-    "tags": ["fantasy"]
+    "title": "Ubik",
+    "author": "Philip K. Dick",
+    "release_year": 1969,
+    "tags": ["science fiction"]
+  },
+  {
+    "title": "Solaris",
+    "author": "Stanislaw Lem",
+    "release_year": 1961,
+    "tags": ["science fiction"]
   },
   {
     "title": "Hyperion",
@@ -41,33 +59,15 @@
     "tags": ["science fiction"]
   },
   {
-    "title": "The Three-Body Problem",
-    "author": "Cixin Liu",
-    "release_year": 2008,
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "release_year": 1965,
     "tags": ["science fiction"]
   },
   {
-    "title": "Project Hail Mary",
-    "author": "Andy Weir",
-    "release_year": 2021,
-    "tags": ["science fiction"]
-  },
-  {
-    "title": "A Memory Called Empire",
-    "author": "Arkady Martine",
-    "release_year": 2019,
-    "tags": ["science fiction"]
-  },
-  {
-    "title": "Parable of the Sower",
-    "author": "Octavia E. Butler",
-    "release_year": 1993,
-    "tags": ["dystopian"]
-  },
-  {
-    "title": "Circe",
-    "author": "Madeline Miller",
-    "release_year": 2018,
-    "tags": ["mythology"]
+    "title": "The Hero with a Thousand Faces",
+    "author": "Joseph Campbell",
+    "release_year": 1949,
+    "tags": ["mythology", "archetypes"]
   }
 ]

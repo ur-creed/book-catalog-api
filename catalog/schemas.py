@@ -11,25 +11,25 @@ class CreateBookRequest(BaseModel):
         min_length=1,
         max_length=300,
         description="Required. Book title; cannot be blank.",
-        examples=["Neuromancer"],
+        examples=["Circe"],
     )
     author: str = Field(
         ...,
         min_length=1,
         max_length=200,
         description="Required. Author name; cannot be blank.",
-        examples=["William Gibson"],
+        examples=["Madeline Miller"],
     )
     year: int = Field(
         ...,
         ge=1400,
         description="Required. Publication year from 1400 through the current year.",
-        examples=[1984],
+        examples=[2018],
     )
     tags: list[str] | None = Field(
         default=None,
         description="Optional list of non-empty tags.",
-        examples=[["cyberpunk", "science fiction"]],
+        examples=[["mythology"]],
     )
 
     @field_validator("title", "author")
