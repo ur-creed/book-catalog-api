@@ -64,12 +64,38 @@ class TestCreateBook:
         assert body["title"] == "Dune"
         assert body["author"] == "Frank Herbert"
 
+    def test_create_accepts_classical_year(self, client: TestClient) -> None:
+        response = client.post(
+            "/books/",
+            json={
+                "title": "Discourses",
+                "author": "Epictetus",
+                "year": 108,
+                "tags": ["stoicism"],
+            },
+        )
+        assert response.status_code == 201
+        assert response.json()["year"] == 108
+
+    def test_create_accepts_bce_year(self, client: TestClient) -> None:
+        response = client.post(
+            "/books/",
+            json={
+                "title": "Republic",
+                "author": "Plato",
+                "year": -380,
+                "tags": ["philosophy"],
+            },
+        )
+        assert response.status_code == 201
+        assert response.json()["year"] == -380
+
     @pytest.mark.parametrize(
         "payload",
         [
             {},
             {"title": "   ", "author": "Someone", "year": 2000},
-            {"title": "Too Old", "author": "Anon", "year": 1399},
+            {"title": "Too Old", "author": "Anon", "year": -3001},
             {
                 "title": "From the Future",
                 "author": "Anon",
@@ -81,7 +107,7 @@ class TestCreateBook:
         ids=[
             "missing_fields",
             "blank_title",
-            "year_before_1400",
+            "year_before_3000_bce",
             "year_in_future",
             "year_not_int",
             "empty_tag",

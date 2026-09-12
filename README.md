@@ -35,7 +35,7 @@ web_server.py       # python web_server.py
 
 | Method | Path | Description |
 |---|---|---|
-| `POST` | `/books/` | Create (`title`, `author`, `year` 1400–now, optional `tags`) |
+| `POST` | `/books/` | Create (`title`, `author`, `year` 3000 BCE–now, optional `tags`; negative = BCE) |
 | `GET` | `/books/` | Paginated list; `author`, `year`, `title` substring |
 | `GET` | `/books/{id}` | Fetch one |
 | `DELETE` | `/books/{id}` | Remove |

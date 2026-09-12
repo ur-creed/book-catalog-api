@@ -2,6 +2,9 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
 
+# 3000 BCE through the current year (negative years are BCE).
+YEAR_MIN = -3000
+
 
 class CreateBookRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -11,25 +14,28 @@ class CreateBookRequest(BaseModel):
         min_length=1,
         max_length=300,
         description="Required. Book title; cannot be blank.",
-        examples=["Circe"],
+        examples=["Meditations"],
     )
     author: str = Field(
         ...,
         min_length=1,
         max_length=200,
         description="Required. Author name; cannot be blank.",
-        examples=["Madeline Miller"],
+        examples=["Marcus Aurelius"],
     )
     year: int = Field(
         ...,
-        ge=1400,
-        description="Required. Publication year from 1400 through the current year.",
-        examples=[2018],
+        ge=YEAR_MIN,
+        description=(
+            "Required. Composition or publication year from 3000 BCE through the "
+            "current year. Use a negative integer for BCE (e.g. -441 for 441 BCE)."
+        ),
+        examples=[180],
     )
     tags: list[str] | None = Field(
         default=None,
         description="Optional list of non-empty tags.",
-        examples=[["mythology"]],
+        examples=[["stoicism", "philosophy"]],
     )
 
     @field_validator("title", "author")
@@ -43,8 +49,8 @@ class CreateBookRequest(BaseModel):
     @classmethod
     def year_in_range(cls, year: int) -> int:
         current_year = datetime.now().year
-        if year < 1400:
-            raise ValueError("year must be at least 1400")
+        if year < YEAR_MIN:
+            raise ValueError(f"year must be at least {YEAR_MIN} (3000 BCE)")
         if year > current_year:
             raise ValueError(f"year cannot be later than {current_year}")
         return year
